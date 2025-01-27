@@ -2,29 +2,47 @@
 title: "Portfolio_02"
 author: "Enhui Wang"
 date: "2025-02-01"
-output: html_document
+output: github_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+I worked on this project "Choose some data from EDA (Exploratory Data Analysis) or VDat (Visualizing Data); table or plot them in a way that Tukey/Cleveland didn’t." I created a combined density plot and heatmap visualization for the "sunday_weight" variable (i.e., represent weight data) for visualizing the shape of the distribution and the frequency of observations. 
+
+```{r}
+#open data
+library(readr)
+Data_01 <- read_csv("Data_01.csv")
+View(Data_01)
+library(ggplot2)
+```
+```{r}
+#Filter out non NA in the sunday_weight variable 
+filtered_data <- na.omit(Data_01$sunday_weight)
+
+#create a data frame for plotting
+plot_data <- data.frame(weight=filtered_data)
+
+#ensure weight is numeric
+plot_data$weight <- as.numeric(plot_data$weight)
+
 ```
 
-## R Markdown
+```{r}
+#create a density plot and heatmap for sunday_weight
+plot <- ggplot(plot_data, aes(x = weight)) +
+# the density curve is to visualize the overall shape of the distribution of the data
+  geom_density(fill = "blue", alpha = 0.7) +
+# the heatmap-like bins show how many data points fall within particular intervals; the visualization helps to see high or low-frequency regions.
+  stat_bin(binwidth = 5, aes(y = ..count.., fill = ..count..),#add a binning layer and set each bin to cover 5 units in weight.
+           geom = "tile", color = "white", alpha = 0.6) + #make the bins rectangular. 
+  labs(
+    title = "Density and Heatmap for Sunday Weight",
+    x = "Sunday Weight (lbs)",
+    y = "Density"
+  ) +
+  scale_fill_gradient(low = "lightblue", high = "darkblue", name = "Frequency")
+print (plot)
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
 ```
+According to the plot, the peak is around 160 lbs. The darker blue bars suggest the highest frequencies occur around the peak of the density curve (e.g., 160 lbs), with progressively lower frequencies near the tails of the distribution.
 
-## Including Plots
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
